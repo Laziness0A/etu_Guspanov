@@ -5,14 +5,15 @@
 
 int pos = 0; 
 bool realdate = false;
-// функция для печати псевдоменюшки
+
 void Menu() {
-    char menu[3][41] = {"1.Ввести Дату Рождения","2.Вывести Аркан","3.Выход"};
+    char menu[3][41] = {"1.Ввести Дату Рождения", "2.Вывести Аркан", "3.Выход"};
     char marker[5] = "<---";
+    
     for (int i = 0; i < 3; ++i) {
         printf("%s", menu[i]);
         if (i == pos) {
-            printf("  %s", marker); // если pos == i то печатает стрелочку
+            printf("  %s", marker);
         }
         printf("\n");
     }
@@ -23,10 +24,9 @@ struct Date {
     int month;
     int year;
 };
- 
+
 struct Date dt;
 
-// Функция для ввода даты
 void inputDate(struct Date* dt) {
     char input[1000];
     printf("Введите дату (ДД.ММ.ГГГГ): ");
@@ -36,175 +36,99 @@ void inputDate(struct Date* dt) {
 }
 
 int arcanaschet(struct Date dt) {
-    int arcan = (dt.day / 10) + (dt.day % 10); // сначала 1 цифру потом вторую 
+    int arcan = (dt.day / 10) + (dt.day % 10);
     arcan += (dt.month / 10) + (dt.month % 10);
-    arcan += (dt.year / 1000) + ((dt.year % 1000) / 100 ) + ((dt.year % 100) / 10 ) + (dt.year % 10);
+    arcan += (dt.year / 1000) + ((dt.year % 1000) / 100) + ((dt.year % 100) / 10) + (dt.year % 10);
+    
     if (arcan > 22) {
-        arcan -=22;
+        arcan -= 22;
     }
+    
     return arcan;
 }
 
-void prov(int funct,struct Date dt) {
-  // m1-m12 в массив
-    int m1 = 31;
-    int m2 = 28;
-    int m3 = 31;
-    int m4 = 30;
-    int m5 = 31;
-    int m6 = 30;
-    int m7 = 31;
-    int m8 = 31;
-    int m9 = 30;
-    int m10 = 31;
-    int m11= 30;
-    int m12 = 31;
-    if (dt.year% 4 == 0 && (dt.year % 100 != 0 || dt.year % 400 == 0)){
-        m2 = 29;}
-    switch (funct) {
-        case 1: {
-            if (dt.day <= m1){
-                realdate = true;
-            }}
-            break;
-        case 2: {
-            if (dt.day <= m2){
-                realdate = true;
-            }}
-            break;
-        case 3: {
-            if (dt.day <= m3){
-                realdate = true;
-            }}
-            break;
-        case 4: {
-            if (dt.day <= m4){
-                realdate = true;
-            }}
-            break;
-        case 5: {
-            if (dt.day <= m5){
-                realdate = true;
-            }}
-            break;
-        case 6: {
-            if (dt.day <= m6){
-                realdate = true;
-            }}
-            break;
-        case 7: {
-            if (dt.day <= m7){
-                realdate = true;
-            }}
-            break;
-        case 8: {
-            if (dt.day <= m8){
-                realdate = true;
-            }}
-            break;
-        case 9: {
-            if (dt.day <= m9){
-                realdate = true;
-            }}
-            break;
-        case 10: {
-            if (dt.day <= m10){
-                realdate = true;
-            }}
-            break;
-        case 11: {
-            if (dt.day <= m11){
-                realdate = true;
-            }}
-            break;
-        case 12: {
-            if (dt.day <= m12){
-                realdate = true;
-            }
-            break;}}
-
+// Оптимизированная версия функции проверки даты
+void validateDate(struct Date dt) {
+    int daysInMonths[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    
+    if (dt.year % 4 == 0 && (dt.year % 100 != 0 || dt.year % 400 == 0)) {
+        daysInMonths[1] = 29;  // Високосный год
     }
 
-//{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
-void Realdate(struct Date dt) {
-    if (dt.year > 0){
-        if (dt.month > 0 && dt.month <= 12){
-            if (dt.day > 0 && arcanaschet(dt) < 45){
-                prov(dt.month,dt);}
+    // Проверяем корректность месяца и дня
+    if (dt.month > 0 && dt.month <= 12 && dt.day > 0 && dt.day <= daysInMonths[dt.month - 1]) {
+        realdate = true;
+    } else {
+        realdate = false;
+    }
+}
+
+void checkRealDate(struct Date dt) {
+    if (dt.year > 0 && dt.month > 0 && dt.month <= 12) {
+        if (dt.day > 0 && arcanaschet(dt) < 45) {
+            validateDate(dt);
         }
     }
 }
 
-void WHATDO(int funct){ //Название говорит за себя
+void handleAction(int funct) {
     switch (funct) {
-        case 0: {
+        case 0:
             printf("\e[1;1H\e[2J");
             inputDate(&dt);
-            Realdate(dt);
-            if (realdate == false) {
-                printf("Недопустимый ввод.(чтобы продолжить работу нажмите enter)\n");
-                while (getch()!=13){}}
-        }
-        break;
-        case 1: {
+            checkRealDate(dt);
+            if (!realdate) {
+                printf("Недопустимый ввод. (чтобы продолжить работу нажмите enter)\n");
+                while (getch() != 13) {}
+            }
+            break;
+        case 1:
             printf("\e[1;1H\e[2J");
-            if (realdate == true) {
-                printf("У вас %d аркан.(чтобы продолжить работу нажмите enter)",arcanaschet(dt));
-                while (getch()!=13){}}
-            else {
-                printf("Вашей даты рождения не существует.(чтобы продолжить работу нажмите enter)\n");
-                while (getch()!=13){}}
-
-        }
-        break;
-        default: {
-        }
-        break;
-}}
+            if (realdate) {
+                printf("У вас %d аркан. (чтобы продолжить работу нажмите enter)", arcanaschet(dt));
+                while (getch() != 13) {}
+            } else {
+                printf("Вашей даты рождения не существует. (чтобы продолжить работу нажмите enter)\n");
+                while (getch() != 13) {}
+            }
+            break;
+        default:
+            break;
+    }
+}
 
 int main() {
-    int inpuT;
-    while (1) {
+    int input;
+    while (true) {
         Menu();
-        inpuT = getch();
-        if (inpuT == 49) {
+        input = getch();
+        
+        if (input == 49) {
             pos = 0;
-        } else if (inpuT == 50) {
+        } else if (input == 50) {
             pos = 1;
-        } else if (inpuT == 27) {
-            printf("\e[1;1H\e[2J");
-            return 0;
-        } else if (inpuT == 51) {
+        } else if (input == 51) {
             pos = 2;
-        } else if (inpuT == 27) {
-            printf("\e[1;1H\e[2J");
-            return 0;
-        } else if (inpuT == 13) {
+        } else if (input == 13) {
             if (pos == 2) {
                 printf("\e[1;1H\e[2J");
                 return 0;
             } else {
-                WHATDO(pos);
+                handleAction(pos);
             }
-        } else if (inpuT == 224) {
-            inpuT = getch();
-            if (inpuT == 72) {
+        } else if (input == 224) {
+            input = getch();
+            if (input == 72) {
                 pos--;
-                if(pos < 0){
-                    pos = 2;
-                }
-            }
-            else if (inpuT == 80) {
+                if (pos < 0) pos = 2;
+            } else if (input == 80) {
                 pos++;
-                if(pos > 2){
-                    pos = 0;
-                }
-            }}
-          else {
-            WHATDO(pos);
+                if (pos > 2) pos = 0;
+            }
         }
 
-        printf("\e[1;1H\e[2J");}
+        printf("\e[1;1H\e[2J");
+    }
 
     return 0;
 }
