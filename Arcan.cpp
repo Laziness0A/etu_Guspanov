@@ -119,8 +119,8 @@ void handleAction(int funct) {
                 printf("У вас %d аркан. (чтобы продолжить работу нажмите enter)\n", arcanaschet(dt));
                 description(arcanaschet(dt));
                 auto end = chrono::high_resolution_clock::now();
-                auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-                cout << "Время выполнения: " << duration.count() << " миллисекунд" << endl;
+                auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+                cout << "Время выполнения: " << duration.count() << " наносекунд" << endl;
 
 
                 while (getch() != 13) {}
