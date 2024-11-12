@@ -6,11 +6,21 @@
 #include <chrono>
 
 using namespace std;
-ofstream log;
-ifstream info;
 int pos = 0; 
 bool realdate = false;
 
+struct Date {
+    int day;
+    int month;
+    int year;
+};
+
+struct Date dt;
+
+void resetDate() {
+    dt = {0, 0, 0};
+    realdate = false;
+}
 
 void Menu() {
     char menu[3][41] = {"1.Ввести Дату Рождения", "2.Вывести Аркан", "3.Выход"};
@@ -25,24 +35,17 @@ void Menu() {
     }
 }
 
-struct Date {
-    int day;
-    int month;
-    int year;
-};
-
-struct Date dt;
-
 void inputDate(struct Date* dt) {
     char input[1000];
     printf("Введите дату (ДД.ММ.ГГГГ): ");
     scanf("%s", input);
 
-    sscanf(input, "%d.%d.%d", &dt->day, &dt->month, &dt->year);
+    if (sscanf(input, "%d.%d.%d", &dt->day, &dt->month, &dt->year) != 3) {
+        resetDate(); // Сброс если некорректный ввод
+    }
 }
 
-int arcanaschet(struct Date dt) {
-    
+int arcanaschet(struct Date dt) { 
     int arcan = (dt.day / 10) + (dt.day % 10);
     arcan += (dt.month / 10) + (dt.month % 10);
     arcan += (dt.year / 1000) + ((dt.year % 1000) / 100) + ((dt.year % 100) / 10) + (dt.year % 10);
@@ -54,7 +57,6 @@ int arcanaschet(struct Date dt) {
     return arcan;
 }
 
-// Оптимизированная версия функции проверки даты
 void validateDate(struct Date dt) {
     int daysInMonths[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     
@@ -62,11 +64,10 @@ void validateDate(struct Date dt) {
         daysInMonths[1] = 29;  // Високосный год
     }
 
-    // Проверяем корректность месяца и дня
     if (dt.month > 0 && dt.month <= 12 && dt.day > 0 && dt.day <= daysInMonths[dt.month - 1]) {
         realdate = true;
     } else {
-        realdate = false;
+        resetDate(); // Сброс если дата некорректна
     }
 }
 
@@ -74,26 +75,30 @@ void checkRealDate(struct Date dt) {
     if (dt.year > 0 && dt.month > 0 && dt.month <= 12) {
         if (dt.day > 0 && arcanaschet(dt) < 45) {
             validateDate(dt);
+        } else {
+            resetDate(); // Сброс при некорректном значении
         }
+    } else {
+        resetDate(); // Сброс при некорректном значении
     }
 }
 
 void recordFiles() {
-    
+    ofstream log("log.txt", ios_base::app);
     log << dt.day << "." << dt.month << "." << dt.year << endl;
-
+    log.close();
 }
 
-void description(int arcan){
+void description(int arcan) {
+    ifstream info("info.txt", ios_base::in);
     string stroka;
-    info.open("info.txt");
     int curline = 1;
-    while(getline(info,stroka)){
-        if (curline == arcan){
+    while (getline(info, stroka)) {
+        if (curline == arcan) {
             cout << stroka << endl;
             break;
         }
-        curline +=1;
+        curline += 1;
     }
     info.close();
 }
@@ -107,8 +112,7 @@ void handleAction(int funct) {
             if (!realdate) {
                 printf("Недопустимый ввод. (чтобы продолжить работу нажмите enter)\n");
                 while (getch() != 13) {}
-            }
-            else {
+            } else {
                 recordFiles();
             }
             break;
@@ -122,7 +126,6 @@ void handleAction(int funct) {
                 auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
                 cout << "Время выполнения: " << duration.count() << " наносекунд" << endl;
 
-
                 while (getch() != 13) {}
             } else {
                 printf("Вашей даты рождения не существует. (чтобы продолжить работу нажмите enter)\n");
@@ -134,10 +137,8 @@ void handleAction(int funct) {
     }
 }
 
-
 int main() {
     int input;
-    log.open("log.txt", ios_base::app);
     
     while (true) {
         Menu();
@@ -169,6 +170,5 @@ int main() {
 
         printf("\e[1;1H\e[2J");
     }
-    log.close();
     return 0;
 }
