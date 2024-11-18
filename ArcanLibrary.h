@@ -1,6 +1,8 @@
 #ifndef ARCAN_LIBRARY_H   
 #define ARCAN_LIBRARY_H
 
+#define ARCAN_LIBRARY_WORK
+
 struct Date {
     int day;
     int month;
