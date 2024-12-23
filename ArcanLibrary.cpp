@@ -7,6 +7,8 @@
 
 using namespace std;
 
+
+
 struct Date dt;
 bool realdate = false;
 int pos=0;
@@ -101,6 +103,7 @@ void handleAction(int funct) {
     switch (funct) {
         case 0:
             printf("\e[1;1H\e[2J");
+            resetDate();
             inputDate(&dt);
             checkRealDate(dt);
             if (!realdate) {
@@ -166,3 +169,4 @@ void keyWork(){
         printf("\e[1;1H\e[2J");
     }
  }
+

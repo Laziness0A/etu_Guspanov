@@ -4,15 +4,16 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include <ArcanLibrary.h>
-
-
+#include "C:\Users\Lazzy\Desktop\Prg\firstrepo\ArcanLibrary.cpp" // НЕ ВИДИТ H ФАЙЛ ПОЧЕМУ НЕ ПОНЯТНО ВИДИТ ТОЛЬКО ТАК И ВТОРУЮ БИБЛИОТЕКУ ТОЖЕ
 
 int main() {
-    #ifdef ARCAN_LIBRARY_WORK
+    #ifdef ARCAN_LIBRARY_H
         keyWork();
     #else
         std::cout << "НЕ ПАШЕТ ;(" << std::endl;
     #endif
     return 0;
 }
+
+
+

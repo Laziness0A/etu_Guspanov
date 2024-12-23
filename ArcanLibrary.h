@@ -1,15 +1,11 @@
 #ifndef ARCAN_LIBRARY_H   
 #define ARCAN_LIBRARY_H
 
-#define ARCAN_LIBRARY_WORK
-
 struct Date {
     int day;
     int month;
     int year;
 };
-
-
 
 extern struct Date dt;
 extern bool realdate;
@@ -26,4 +22,4 @@ void description(int arcan);
 void handleAction(int funct);
 void keyWork();
 
-#endif 
+#endif // ARCAN_LIBRARY_H
